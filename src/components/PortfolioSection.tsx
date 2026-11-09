@@ -3,18 +3,28 @@
 import { motion } from "framer-motion";
 import AnimatedSection from "./AnimatedSection";
 
-const TG = "https://t.me/versusire";
-
 const projects = [
-  { num: "01", title: "E-Commerce Platform", category: "Веб-приложение",
+  { 
+    num: "01", 
+    title: "E-Commerce Platform", 
+    category: "Веб-приложение",
     desc: "Магазин с каталогом, Stripe-оплатой, кабинетом администратора и аналитикой продаж.",
-    tags: ["Next.js", "PostgreSQL", "Stripe"] },
-  { num: "02", title: "Telegram Bot доставки", category: "Telegram-бот",
-    desc: "Бот для приёма заказов, уведомлений курьерам и live-отслеживания статусов.",
-    tags: ["Node.js", "PostgreSQL", "Telegram API"] },
-  { num: "03", title: "CRM Dashboard", category: "SaaS-система",
+    tags: ["Next.js", "PostgreSQL", "Stripe"] 
+  },
+  { 
+    num: "02", 
+    title: "Max & Telegram Bridge", 
+    category: "Приложение для связи",
+    desc: "Система синхронизации мессенджера Max и Telegram: сообщения из ТГ мгновенно приходят в Max и наоборот.",
+    tags: ["Node.js", "WebSockets", "Telegram API"] 
+  },
+  { 
+    num: "03", 
+    title: "CRM Dashboard", 
+    category: "SaaS-система",
     desc: "Внутренний инструмент для управления клиентами, сделками и воронкой продаж.",
-    tags: ["React", "TypeScript", "REST API"] },
+    tags: ["React", "TypeScript", "REST API"] 
+  },
 ];
 
 export default function PortfolioSection() {
@@ -35,25 +45,22 @@ export default function PortfolioSection() {
 
           <AnimatedSection delay={0.14} from="right">
             <p className="text-base leading-relaxed text-white/50 md:text-lg">
-              Новые кейсы добавляются по мере завершения. Если нужен проект похожего масштаба — напишите напрямую.
+              Проекты, демонстрирующие наш подход к архитектуре и визуалу. 
+              Каждый кейс — это решение конкретной бизнес-задачи под ключ.
             </p>
-            <a href={TG} target="_blank" rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-white/45 no-underline transition hover:text-white/80">
-              <span className="h-px w-8 bg-white/30" />
-              Обсудить в Telegram ↗
-            </a>
           </AnimatedSection>
         </div>
 
         <div className="grid gap-5 md:grid-cols-3">
           {projects.map((p, i) => (
-            <motion.a key={p.num} href={TG} target="_blank" rel="noopener noreferrer"
+            <motion.div 
+              key={p.num}
               initial={{ opacity: 0, y: 44, filter: "blur(6px)" }}
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-70px" }}
               transition={{ duration: 0.65, delay: i * 0.1, ease: "easeOut" }}
               whileHover={{ y: -8 }}
-              className="panel-glass group relative block cursor-pointer overflow-hidden rounded-sm no-underline">
+              className="panel-glass group relative block overflow-hidden rounded-sm">
 
               {/* Visual area */}
               <div className="relative h-44 overflow-hidden bg-gradient-to-br from-[#111] to-[#060606] flex items-center justify-center">
@@ -69,19 +76,21 @@ export default function PortfolioSection() {
 
               {/* Info */}
               <div className="p-6">
-                <h3 className="text-base font-bold uppercase tracking-[0.08em] text-white/90 group-hover:text-white transition-colors">{p.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/40">{p.desc}</p>
+                <h3 className="text-base font-bold uppercase tracking-[0.08em] text-white/90 group-hover:text-white transition-colors">
+                  {p.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-white/40">
+                  {p.desc}
+                </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {p.tags.map(tag => (
-                    <span key={tag} className="rounded-full border border-white/8 bg-white/4 px-3 py-1 text-xs text-white/35">{tag}</span>
+                    <span key={tag} className="rounded-full border border-white/8 bg-white/4 px-3 py-1 text-xs text-white/35">
+                      {tag}
+                    </span>
                   ))}
                 </div>
-                <div className="mt-5 flex items-center gap-3 text-sm font-medium text-white/40 group-hover:text-white/70 transition-colors">
-                  <span className="block h-px w-8 bg-white/25 group-hover:w-12 transition-all duration-400" />
-                  Написать в Telegram ↗
-                </div>
               </div>
-            </motion.a>
+            </motion.div>
           ))}
         </div>
       </div>
