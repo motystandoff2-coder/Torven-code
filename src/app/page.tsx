@@ -13,6 +13,7 @@ import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import SectionNavigator from "@/components/SectionNavigator";
+import NatureOverlay from "@/components/NatureOverlay";
 
 const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
   ssr: false,
@@ -25,6 +26,7 @@ export default function HomePage() {
   return (
     <main className="relative overflow-hidden bg-[#060606]">
       <ParticleBackground />
+      <NatureOverlay />
       <CursorGlow />
       <Navbar />
       <SectionNavigator />

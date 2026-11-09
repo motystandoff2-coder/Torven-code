@@ -26,10 +26,20 @@ export default function SectionNavigator() {
   }, [sync]);
 
   const goTo = (i: number) => {
-    const id = SECTIONS[Math.max(0, Math.min(SECTIONS.length - 1, i))];
+    const clampedIdx = Math.max(0, Math.min(SECTIONS.length - 1, i));
+    const id = SECTIONS[clampedIdx];
     if (!id) return;
-    if (id === "hero") window.scrollTo({ top: 0, behavior: "smooth" });
-    else document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    const el = id === "hero" ? document.body : document.getElementById(id);
+    if (el) {
+      const top = id === "hero" ? 0 : el.offsetTop;
+      window.scrollTo({
+        top: top,
+        behavior: "smooth"
+      });
+      // Принудительно устанавливаем индекс, чтобы UI обновился сразу
+      setIdx(clampedIdx);
+    }
   };
 
   return (
