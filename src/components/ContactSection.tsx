@@ -60,7 +60,6 @@ export default function ContactSection() {
               <p>— отвечаем в течение 24 часов;</p>
               <p>— landing, app, bot или SaaS;</p>
               <p>— backend, frontend и база в одной связке;</p>
-              <p>— заявка сохраняется в PostgreSQL.</p>
             </div>
             <div className="mt-10">
               <a href={TG} target="_blank" rel="noopener noreferrer"
