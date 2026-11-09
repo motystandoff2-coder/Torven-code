@@ -3,16 +3,10 @@
 import { useEffect, useRef } from "react";
 
 interface Particle {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  opacity: number;
-  tone: string;
+  x: number; y: number;
+  vx: number; vy: number;
+  size: number; opacity: number;
 }
-
-const tones = ["255, 90, 31", "232, 221, 193", "181, 163, 135"];
 
 export default function ParticleBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -20,69 +14,48 @@ export default function ParticleBackground() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animationFrame = 0;
+    let raf = 0;
     const particles: Particle[] = [];
-    const particleCount = 110;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
+      canvas.width  = window.innerWidth;
       canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
-    };
-
-    const createParticles = () => {
       particles.length = 0;
-      for (let i = 0; i < particleCount; i += 1) {
+      for (let i = 0; i < 120; i++) {
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.12,
-          vy: Math.random() * 0.18 + 0.02,
-          size: Math.random() * 1.9 + 0.35,
-          opacity: Math.random() * 0.22 + 0.05,
-          tone: tones[Math.floor(Math.random() * tones.length)] ?? tones[0],
+          x:       Math.random() * canvas.width,
+          y:       Math.random() * canvas.height,
+          vx:      (Math.random() - 0.5) * 0.1,
+          vy:      Math.random() * 0.14 + 0.02,
+          size:    Math.random() * 1.6 + 0.3,
+          opacity: Math.random() * 0.18 + 0.04,
         });
       }
     };
 
     resize();
-    createParticles();
-
-    const onResize = () => {
-      resize();
-      createParticles();
-    };
-
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", resize);
 
     const drawNebula = () => {
-      const gradientA = ctx.createRadialGradient(
-        canvas.width * 0.25,
-        canvas.height * 0.18,
-        0,
-        canvas.width * 0.25,
-        canvas.height * 0.18,
-        canvas.width * 0.22,
+      const g1 = ctx.createRadialGradient(
+        canvas.width * 0.22, canvas.height * 0.16, 0,
+        canvas.width * 0.22, canvas.height * 0.16, canvas.width * 0.22,
       );
-      gradientA.addColorStop(0, "rgba(255, 90, 31, 0.08)");
-      gradientA.addColorStop(1, "rgba(255, 90, 31, 0)");
-      ctx.fillStyle = gradientA;
+      g1.addColorStop(0, "rgba(255,255,255,0.025)");
+      g1.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g1;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const gradientB = ctx.createRadialGradient(
-        canvas.width * 0.82,
-        canvas.height * 0.44,
-        0,
-        canvas.width * 0.82,
-        canvas.height * 0.44,
-        canvas.width * 0.17,
+      const g2 = ctx.createRadialGradient(
+        canvas.width * 0.8, canvas.height * 0.42, 0,
+        canvas.width * 0.8, canvas.height * 0.42, canvas.width * 0.16,
       );
-      gradientB.addColorStop(0, "rgba(232, 221, 193, 0.05)");
-      gradientB.addColorStop(1, "rgba(232, 221, 193, 0)");
-      ctx.fillStyle = gradientB;
+      g2.addColorStop(0, "rgba(200,200,200,0.018)");
+      g2.addColorStop(1, "rgba(200,200,200,0)");
+      ctx.fillStyle = g2;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -90,48 +63,37 @@ export default function ParticleBackground() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawNebula();
 
-      particles.forEach((particle, i) => {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        if (particle.y > canvas.height + 10) {
-          particle.y = -10;
-          particle.x = Math.random() * canvas.width;
-        }
-        if (particle.x < -10) particle.x = canvas.width + 10;
-        if (particle.x > canvas.width + 10) particle.x = -10;
+      particles.forEach((p, i) => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.y > canvas.height + 10) { p.y = -10; p.x = Math.random() * canvas.width; }
+        if (p.x < -10) p.x = canvas.width + 10;
+        if (p.x > canvas.width + 10) p.x = -10;
 
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${particle.tone}, ${particle.opacity})`;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.opacity})`;
         ctx.fill();
 
-        for (let j = i + 1; j < particles.length; j += 1) {
-          const other = particles[j];
-          const dx = particle.x - other.x;
-          const dy = particle.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 95) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const o = particles[j];
+          const dx = p.x - o.x, dy = p.y - o.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 90) {
             ctx.beginPath();
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(other.x, other.y);
-            ctx.strokeStyle = `rgba(232, 221, 193, ${0.03 * (1 - distance / 95)})`;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(o.x, o.y);
+            ctx.strokeStyle = `rgba(255,255,255,${0.025 * (1 - dist / 90)})`;
             ctx.lineWidth = 0.4;
             ctx.stroke();
           }
         }
       });
 
-      animationFrame = requestAnimationFrame(animate);
+      raf = requestAnimationFrame(animate);
     };
 
     animate();
-
-    return () => {
-      cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", onResize);
-    };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
 
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }} />;

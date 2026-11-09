@@ -4,40 +4,29 @@ import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import AnimatedSection from "./AnimatedSection";
 
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
+function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const ref    = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
-  const [count, setCount] = useState(0);
+  const [n, setN] = useState(0);
 
   useEffect(() => {
     if (!inView) return;
-
-    const startedAt = Date.now();
-    const duration = 1800;
-
+    const t0 = Date.now(), dur = 1800;
     const tick = () => {
-      const elapsed = Date.now() - startedAt;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      setCount(Math.floor(target * eased));
-      if (progress < 1) requestAnimationFrame(tick);
+      const p = Math.min((Date.now() - t0) / dur, 1);
+      setN(Math.floor((1 - Math.pow(1 - p, 4)) * target));
+      if (p < 1) requestAnimationFrame(tick);
     };
-
     requestAnimationFrame(tick);
   }, [inView, target]);
 
-  return (
-    <span ref={ref} className="gradient-text">
-      {count}
-      {suffix}
-    </span>
-  );
+  return <span ref={ref} className="gradient-text">{n}{suffix}</span>;
 }
 
 const stats = [
-  { label: "Завершённых проектов", value: 10, suffix: "+" },
-  { label: "Направлений в одной команде", value: 6, suffix: "" },
-  { label: "Обычный срок реализации", display: "2-4 недели" },
+  { label: "Завершённых проектов",        value: 10, suffix: "+" },
+  { label: "Направлений в одной команде", value: 6,  suffix: ""  },
+  { label: "Обычный срок реализации",     display: "2—4 нед."     },
 ];
 
 export default function StatsSection() {
@@ -45,36 +34,30 @@ export default function StatsSection() {
     <section id="stats" className="relative py-28 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <AnimatedSection>
-          <div className="mb-6 flex items-center gap-3">
-            <span className="h-2 w-2 rounded-full bg-[#ff5a1f]" />
-            <span className="text-sm font-semibold uppercase tracking-[0.22em] text-[#ff5a1f]">
-              operational numbers
-            </span>
+          <div className="mb-5 flex items-center gap-3">
+            <span className="h-px w-8 bg-white/40" />
+            <span className="text-sm font-semibold uppercase tracking-[0.22em] text-white/50">реальные цифры</span>
           </div>
           <h2 className="text-4xl font-black uppercase leading-[0.96] tracking-tight text-white md:text-5xl lg:text-6xl">
-            Не теория, а
-            <span className="gradient-text"> рабочая дистанция до запуска</span>
+            Не теория, а<span className="gradient-text"> рабочая дистанция до запуска</span>
           </h2>
         </AnimatedSection>
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+          {stats.map((s, i) => (
+            <motion.div key={s.label}
+              initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.55, delay: index * 0.1 }}
-              className="panel-glass rounded-sm p-8 md:p-10"
-            >
+              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+              className="panel-glass rounded-sm p-8 md:p-10">
               <div className="text-4xl font-black md:text-5xl">
-                {"display" in stat ? (
-                  <span className="gradient-text">{stat.display}</span>
-                ) : (
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                )}
+                {"display" in s
+                  ? <span className="gradient-text">{s.display}</span>
+                  : <Counter target={s.value} suffix={s.suffix} />
+                }
               </div>
-              <p className="mt-4 text-sm uppercase tracking-[0.16em] text-[#7f796f]">{stat.label}</p>
+              <p className="mt-4 text-sm uppercase tracking-[0.16em] text-white/35">{s.label}</p>
             </motion.div>
           ))}
         </div>

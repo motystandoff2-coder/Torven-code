@@ -3,68 +3,41 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-interface CustomSelectProps {
-  options: string[];
-  value: string;
-  onChange: (value: string) => void;
-}
+interface CustomSelectProps { options: string[]; value: string; onChange: (v: string) => void; }
 
 export default function CustomSelect({ options, value, onChange }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
+  const root = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const onClick = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    const fn = (e: MouseEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", fn);
+    return () => document.removeEventListener("mousedown", fn);
   }, []);
 
   return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-[14px] border border-[#ff5a1f] bg-[#111] px-4 py-3.5 text-left text-lg text-white outline-none transition hover:border-[#ff7a45] focus:border-[#ff7a45]"
-      >
+    <div ref={root} className="relative">
+      <button type="button" onClick={() => setOpen(v => !v)}
+        className="flex w-full items-center justify-between rounded-sm border border-white/35 bg-white/4 px-4 py-3.5 text-left text-base text-white outline-none transition hover:border-white/55 focus:border-white/55">
         <span>{value}</span>
-        <span className={`text-sm text-[#c9c0b1] transition ${open ? "rotate-180" : ""}`}>⌄</span>
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }} className="text-sm text-white/40">⌄</motion.span>
       </button>
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
+          <motion.div initial={{ opacity:0, y:6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:6 }}
             transition={{ duration: 0.18 }}
-            className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-none border border-[#4b4b4b] bg-[#5a5a5a] shadow-[0_18px_40px_rgba(0,0,0,0.42)]"
-          >
-            <div className="bg-white py-0.5">
-              {options.map((option) => {
-                const active = option === value;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => {
-                      onChange(option);
-                      setOpen(false);
-                    }}
-                    className={`block w-full px-4 py-2.5 text-left text-[15px] transition ${
-                      active
-                        ? "bg-[#727272] font-semibold text-white"
-                        : "bg-white text-black hover:bg-[#efefef]"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                );
-              })}
+            className="absolute left-0 right-0 top-[calc(100%+5px)] z-30 overflow-hidden rounded-sm border border-[#4a4a4a] shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
+            <div className="bg-[#5e5e5e]">
+              {options.map(opt => (
+                <button key={opt} type="button"
+                  onClick={() => { onChange(opt); setOpen(false); }}
+                  className={`block w-full px-4 py-3 text-left text-sm transition ${
+                    opt === value ? "bg-[#787878] font-semibold text-white" : "bg-white text-black hover:bg-[#f0f0f0]"
+                  }`}>
+                  {opt}
+                </button>
+              ))}
             </div>
           </motion.div>
         )}
