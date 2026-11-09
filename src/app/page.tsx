@@ -12,8 +12,12 @@ import PortfolioSection from "@/components/PortfolioSection";
 import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import SectionNavigator from "@/components/SectionNavigator";
 
 const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
+  ssr: false,
+});
+const CursorGlow = dynamic(() => import("@/components/CursorGlow"), {
   ssr: false,
 });
 
@@ -21,7 +25,9 @@ export default function HomePage() {
   return (
     <main className="relative overflow-hidden bg-[#060606]">
       <ParticleBackground />
+      <CursorGlow />
       <Navbar />
+      <SectionNavigator />
 
       <div className="relative z-10">
         <HeroSection />

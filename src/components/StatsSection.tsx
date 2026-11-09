@@ -42,7 +42,7 @@ const stats = [
 
 export default function StatsSection() {
   return (
-    <section className="relative py-28 md:py-32">
+    <section id="stats" className="relative py-28 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
         <AnimatedSection>
           <div className="mb-6 flex items-center gap-3">

@@ -7,15 +7,42 @@ interface Props {
   children: ReactNode;
   className?: string;
   delay?: number;
+  from?: "bottom" | "left" | "right";
 }
 
-export default function AnimatedSection({ children, className = "", delay = 0 }: Props) {
+const variants = {
+  hidden: (from: string) => ({
+    opacity: 0,
+    y: from === "bottom" ? 50 : 0,
+    x: from === "left" ? -40 : from === "right" ? 40 : 0,
+    filter: "blur(6px)",
+  }),
+  visible: {
+    opacity: 1,
+    y: 0,
+    x: 0,
+    filter: "blur(0px)",
+  },
+};
+
+export default function AnimatedSection({
+  children,
+  className = "",
+  delay = 0,
+  from = "bottom",
+}: Props) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      custom={from}
+      variants={variants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{
+        duration: 0.75,
+        delay,
+        ease: [0.22, 1, 0.36, 1],
+      }}
       className={className}
     >
       {children}
