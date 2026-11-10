@@ -2,10 +2,12 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const SECTION_IDS = ["hero", "about", "services", "stats", "process", "portfolio", "cta", "contact"];
 
 export default function SectionNavigator() {
+  const isMobile = useIsMobile();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(false);
   const sectionElementsRef = useRef<HTMLElement[]>([]);
@@ -15,6 +17,8 @@ export default function SectionNavigator() {
   const sections = useMemo(() => SECTION_IDS, []);
 
   useEffect(() => {
+    if (isMobile) return;
+
     const collectSections = () => {
       sectionElementsRef.current = sections
         .map((id) => document.getElementById(id))
@@ -63,9 +67,11 @@ export default function SectionNavigator() {
         window.clearTimeout(scrollUnlockTimerRef.current);
       }
     };
-  }, [sections]);
+  }, [sections, isMobile]);
 
   const goToSection = (targetIndex: number) => {
+    if (isMobile) return;
+
     const clampedIndex = Math.max(0, Math.min(sectionElementsRef.current.length - 1, targetIndex));
     const target = sectionElementsRef.current[clampedIndex];
     if (!target) return;
@@ -100,6 +106,10 @@ export default function SectionNavigator() {
       setCurrentIndex(bestIndex);
     }, 900);
   };
+
+  if (isMobile) {
+    return null;
+  }
 
   const isFirst = currentIndex <= 0;
   const isLast = currentIndex >= sectionElementsRef.current.length - 1;
