@@ -1,63 +1,108 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const SECTIONS = ["hero","about","services","stats","process","portfolio","cta","contact"];
+const SECTION_IDS = ["hero", "about", "services", "stats", "process", "portfolio", "cta", "contact"];
 
 export default function SectionNavigator() {
-  const [idx,     setIdx]     = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(false);
-  // prevent double-click during scroll
-  const scrolling = useRef(false);
+  const sectionElementsRef = useRef<HTMLElement[]>([]);
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollUnlockTimerRef = useRef<number | null>(null);
 
-  /* ── sync current section index ── */
+  const sections = useMemo(() => SECTION_IDS, []);
+
   useEffect(() => {
-    const sync = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.4);
-
-      const viewCenter = window.scrollY + window.innerHeight * 0.5;
-      let best = 0;
-      for (let i = 0; i < SECTIONS.length; i++) {
-        const id = SECTIONS[i];
-        if (!id) continue;
-        const el = id === "hero"
-          ? document.documentElement
-          : document.getElementById(id);
-        if (!el) continue;
-        const top = id === "hero" ? 0 : (el as HTMLElement).offsetTop;
-        if (top <= viewCenter) best = i;
-      }
-      setIdx(best);
+    const collectSections = () => {
+      sectionElementsRef.current = sections
+        .map((id) => document.getElementById(id))
+        .filter((el): el is HTMLElement => Boolean(el));
     };
 
-    sync();
-    window.addEventListener("scroll", sync, { passive: true });
-    return () => window.removeEventListener("scroll", sync);
-  }, []);
+    const updateCurrentSection = () => {
+      setVisible(window.scrollY > window.innerHeight * 0.22);
 
-  /* ── navigate exactly one section up / down ── */
-  const goTo = (target: number) => {
-    if (scrolling.current) return;
-    const clamped = Math.max(0, Math.min(SECTIONS.length - 1, target));
-    const id = SECTIONS[clamped];
-    if (!id) return;
+      const markerY = Math.min(window.innerHeight * 0.34, 260);
+      let bestIndex = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
 
-    scrolling.current = true;
-    setIdx(clamped);
+      sectionElementsRef.current.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        const distance = Math.abs(rect.top - markerY);
+        const isReasonablyVisible = rect.bottom > markerY * 0.5;
 
-    if (id === "hero") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      const el = document.getElementById(id);
-      if (el) {
-        window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+        if (isReasonablyVisible && distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      setCurrentIndex(bestIndex);
+    };
+
+    const onScroll = () => {
+      if (!isProgrammaticScrollRef.current) {
+        updateCurrentSection();
       }
+    };
+
+    collectSections();
+    updateCurrentSection();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", collectSections);
+    window.addEventListener("resize", updateCurrentSection);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", collectSections);
+      window.removeEventListener("resize", updateCurrentSection);
+      if (scrollUnlockTimerRef.current) {
+        window.clearTimeout(scrollUnlockTimerRef.current);
+      }
+    };
+  }, [sections]);
+
+  const goToSection = (targetIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(sectionElementsRef.current.length - 1, targetIndex));
+    const target = sectionElementsRef.current[clampedIndex];
+    if (!target) return;
+
+    if (scrollUnlockTimerRef.current) {
+      window.clearTimeout(scrollUnlockTimerRef.current);
     }
 
-    // unlock after animation
-    setTimeout(() => { scrolling.current = false; }, 900);
+    isProgrammaticScrollRef.current = true;
+    setCurrentIndex(clampedIndex);
+
+    const top = target.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top, behavior: "smooth" });
+
+    scrollUnlockTimerRef.current = window.setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+      const markerY = Math.min(window.innerHeight * 0.34, 260);
+      let bestIndex = 0;
+      let bestDistance = Number.POSITIVE_INFINITY;
+
+      sectionElementsRef.current.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        const distance = Math.abs(rect.top - markerY);
+        const isReasonablyVisible = rect.bottom > markerY * 0.5;
+
+        if (isReasonablyVisible && distance < bestDistance) {
+          bestDistance = distance;
+          bestIndex = index;
+        }
+      });
+
+      setCurrentIndex(bestIndex);
+    }, 900);
   };
+
+  const isFirst = currentIndex <= 0;
+  const isLast = currentIndex >= sectionElementsRef.current.length - 1;
 
   return (
     <AnimatePresence>
@@ -69,30 +114,29 @@ export default function SectionNavigator() {
           transition={{ duration: 0.45 }}
           className="fixed right-5 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-3"
         >
-          {/* ↑ Up */}
           <motion.button
             whileHover={{ scale: 1.12 }}
             whileTap={{ scale: 0.88 }}
-            onClick={() => goTo(idx - 1)}
-            disabled={idx === 0}
+            onClick={() => goToSection(currentIndex - 1)}
+            disabled={isFirst}
             aria-label="Предыдущая секция"
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/14 bg-black/55 text-white/55 backdrop-blur-md transition hover:border-white/35 hover:bg-white/8 hover:text-white disabled:opacity-20"
           >
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="2 9 7 4 12 9"/>
+              <polyline points="2 9 7 4 12 9" />
             </svg>
           </motion.button>
 
-          {/* Dots */}
           <div className="flex flex-col items-center gap-[5px] py-1">
-            {SECTIONS.map((id, i) => (
-              <button key={id} onClick={() => goTo(i)} aria-label={id}>
+            {sections.map((id, index) => (
+              <button key={id} onClick={() => goToSection(index)} aria-label={id}>
                 <motion.span
                   animate={{
-                    width:           i === idx ? 5 : 4,
-                    height:          i === idx ? 16 : 4,
-                    backgroundColor: i === idx ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.18)",
-                    borderRadius:    999,
+                    width: index === currentIndex ? 5 : 4,
+                    height: index === currentIndex ? 16 : 4,
+                    backgroundColor:
+                      index === currentIndex ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.18)",
+                    borderRadius: 999,
                   }}
                   transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   className="block"
@@ -101,17 +145,16 @@ export default function SectionNavigator() {
             ))}
           </div>
 
-          {/* ↓ Down */}
           <motion.button
             whileHover={{ scale: 1.12 }}
             whileTap={{ scale: 0.88 }}
-            onClick={() => goTo(idx + 1)}
-            disabled={idx === SECTIONS.length - 1}
+            onClick={() => goToSection(currentIndex + 1)}
+            disabled={isLast}
             aria-label="Следующая секция"
             className="flex h-10 w-10 items-center justify-center rounded-full border border-white/14 bg-black/55 text-white/55 backdrop-blur-md transition hover:border-white/35 hover:bg-white/8 hover:text-white disabled:opacity-20"
           >
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="2 5 7 10 12 5"/>
+              <polyline points="2 5 7 10 12 5" />
             </svg>
           </motion.button>
         </motion.div>
