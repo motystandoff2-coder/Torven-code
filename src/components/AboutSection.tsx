@@ -27,7 +27,7 @@ export default function AboutSection() {
             </div>
 
             <h2 className="max-w-4xl text-4xl font-black uppercase leading-[0.95] tracking-tight text-white md:text-5xl lg:text-6xl">
-              Torven Code — маленькая product-команда,
+              Torzen Code — маленькая product-команда,
               <span className="gradient-text"> которая собирает систему от атмосферы до backend-логики</span>
             </h2>
 

@@ -76,7 +76,7 @@ export default function HeroSection() {
               </div>
 
               <h1 className="serif-display text-[5rem] leading-[0.86] text-white sm:text-[6.5rem] md:text-[8rem] lg:text-[10rem]">
-                TORVEN
+                TORZEN
               </h1>
 
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-white/50">

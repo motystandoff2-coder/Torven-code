@@ -88,7 +88,7 @@ export default function ServicesSection() {
 
           <AnimatedSection delay={0.14} from="right">
             <p className="text-base leading-relaxed text-white/50 md:ml-auto md:text-lg">
-              Torven Code ведёт проект от первого пикселя до рабочего продакшна:
+              Torzen Code ведёт проект от первого пикселя до рабочего продакшна:
               фронтенд, API, хранилище и всё, что между ними.
             </p>
             <a

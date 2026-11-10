@@ -13,7 +13,7 @@ export default function Footer() {
             <div className="flex items-center gap-2">
               <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/14 bg-black/60 text-xs font-semibold text-white">T</span>
               <div>
-                <div className="text-sm font-bold uppercase tracking-[0.28em] text-white">Torven Code</div>
+                <div className="text-sm font-bold uppercase tracking-[0.28em] text-white">Torzen Code</div>
                 <div className="text-[10px] uppercase tracking-[0.3em] text-white/25">fullstack studio</div>
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/18">
-          <span>© {new Date().getFullYear()} Torven Code. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Torzen Code. All rights reserved.</span>
           <span className="text-[10px] uppercase tracking-[0.26em]">fullstack product studio</span>
         </div>
       </div>

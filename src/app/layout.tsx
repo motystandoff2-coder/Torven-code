@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Torven Code — cinematic fullstack studio",
+  title: "Torzen Code — cinematic fullstack studio",
   description:
-    "Torven Code — премиальная fullstack-студия: сайты, веб-приложения, боты и SaaS-системы в тёмной кинематографичной эстетике.",
+    "Torzen Code — премиальная fullstack-студия: сайты, веб-приложения, боты и SaaS-системы в тёмной кинематографичной эстетике.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

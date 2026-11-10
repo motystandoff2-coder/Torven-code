@@ -59,7 +59,7 @@ export default function ContactSection() {
             transition={isMobile ? undefined : { duration: 0.55 }}
             className="panel-glass rounded-sm p-7 md:p-8"
           >
-            <p className="text-[10px] uppercase tracking-[0.34em] text-white/30">torven relay</p>
+            <p className="text-[10px] uppercase tracking-[0.34em] text-white/30">torzen relay</p>
             <div className="mt-8 space-y-5 text-sm leading-relaxed text-white/50">
               <p>— отвечаем в течение 24 часов;</p>
               <p>— landing, app, bot или SaaS;</p>

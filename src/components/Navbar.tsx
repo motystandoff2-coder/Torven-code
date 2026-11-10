@@ -38,7 +38,7 @@ export default function Navbar() {
               T
             </motion.span>
             <div className="leading-none">
-              <div className="text-sm font-bold uppercase tracking-[0.28em] text-white">Torven Code</div>
+              <div className="text-sm font-bold uppercase tracking-[0.28em] text-white">Torzen Code</div>
               <div className="mt-0.5 text-[10px] uppercase tracking-[0.34em] text-white/35">cinematic fullstack studio</div>
             </div>
           </a>
