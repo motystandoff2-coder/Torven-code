@@ -3,8 +3,11 @@ import { contactSubmissions } from "@/db/schema";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    if (!db) {
+      return Response.json({ error: "Database not configured" }, { status: 503 });
+    }
 
+    const body = await request.json();
     const { name, email, phone, company, service, budget, description } = body;
 
     if (!name || !email || !description) {
