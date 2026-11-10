@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
+@media (min-width: 768px) {
+  html { scroll-behavior: smooth; }
 }
 
 body {
@@ -111,17 +111,25 @@ body {
 }
 .white-btn:hover { background: #e8e8e8; }
 
-/* Outlined button */
+/* Outlined button — desktop with blur */
 .outline-btn {
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(0,0,0,0.3);
   color: #e8e8e8;
-  backdrop-filter: blur(8px);
   transition: border-color 0.25s, background 0.25s, transform 0.2s;
+}
+@media (min-width: 768px) {
+  .outline-btn { backdrop-filter: blur(8px); }
 }
 .outline-btn:hover {
   border-color: rgba(255,255,255,0.4);
   background: rgba(0,0,0,0.5);
+}
+/* Outlined button — mobile version, no blur at all */
+.outline-btn-static {
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.5);
+  color: #e8e8e8;
 }
 
 /* Hero overlay helpers */
@@ -206,19 +214,24 @@ body {
 }
 .mobile-ticker {
   animation: mobile-scroll 20s linear infinite;
-  will-change: transform;
 }
 /* Desktop ticker — JS-driven, just needs base transform */
 .desktop-ticker {
   animation: mobile-scroll 36s linear infinite;
 }
 
-/* Disable all heavy transitions on mobile */
+/* Kill all GPU-heavy effects on mobile */
 @media (max-width: 767px) {
   *, *::before, *::after {
-    transition-duration: 0.1s !important;
+    transition-duration: 0.05s !important;
+    animation-duration: 0.05s !important;
   }
-  .section-transition { height: 40px; }
+  .mobile-ticker { animation-duration: 20s !important; }
+  .animate-pulse-dot { animation-duration: 2.4s !important; }
+  .animate-line-scroll { animation-duration: 1.5s !important; }
+  .section-transition { height: 24px; }
+  .panel-glass { box-shadow: none !important; }
+  .blur-3xl, .blur-2xl, .blur-xl { filter: none !important; display: none !important; }
 }
 
 /* Fine grid background */
