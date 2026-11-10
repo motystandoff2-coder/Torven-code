@@ -17,6 +17,15 @@ interface Bird {
   wingSpan: number; bodyLen: number;
 }
 
+interface Deer {
+  x: number;
+  vx: number;
+  dir: number;       // 1 = right, -1 = left
+  legPhase: number;
+  size: number;
+  op: number;
+}
+
 export default function NatureOverlay() {
   const ref = useRef<HTMLCanvasElement>(null);
   const raf = useRef(0);
@@ -44,7 +53,7 @@ export default function NatureOverlay() {
       rs: (Math.random() - 0.5) * 0.018,
       size: 3 + Math.random() * 6,
       op: 0.1 + Math.random() * 0.18,
-      hue: 90 + Math.random() * 40,          // green range
+      hue: 90 + Math.random() * 40,
     }));
 
     /* ── birds ── */
@@ -58,6 +67,13 @@ export default function NatureOverlay() {
       wingSpan: 12 + Math.random() * 8,
       bodyLen: 4 + Math.random() * 3,
     }));
+
+    /* ── deer ── */
+    const deer: Deer[] = [
+      { x: c.width * 0.15,  vx: 0.18, dir: 1,  legPhase: 0,     size: 1,    op: 0.18 },
+      { x: c.width * 0.75,  vx: 0.14, dir: -1, legPhase: 1.5,   size: 0.8,  op: 0.14 },
+      { x: c.width * 0.45,  vx: 0.22, dir: 1,  legPhase: 3.0,   size: 0.65, op: 0.12 },
+    ];
 
     /* ── foliage edge glow ── */
     const drawEdge = (side: "l" | "r", W: number, H: number) => {
@@ -85,26 +101,23 @@ export default function NatureOverlay() {
         ctx.fillStyle = grad;
         ctx.fillRect(
           side === "l" ? 0 : W - s.r * 2,
-          cy - s.r,
-          s.r * 2,
-          s.r * 2,
+          cy - s.r, s.r * 2, s.r * 2,
         );
       });
 
-      // thin vine-like highlight lines
       ctx.save();
       ctx.globalAlpha = 0.06;
-      ctx.strokeStyle = `rgba(80,180,50,1)`;
+      ctx.strokeStyle = "rgba(80,180,50,1)";
       ctx.lineWidth = 1.2;
       for (let i = 0; i < 5; i++) {
         const startY = H * (0.05 + i * 0.2);
         ctx.beginPath();
         ctx.moveTo(base, startY);
-        const cp1x = base + dir * (50 + Math.sin(t + i) * 20);
-        const cp1y = startY + 80;
-        const cp2x = base + dir * (30 + Math.cos(t + i * 0.7) * 15);
-        const cp2y = startY + 160;
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, base, startY + 220);
+        ctx.bezierCurveTo(
+          base + dir * (50 + Math.sin(t + i) * 20), startY + 80,
+          base + dir * (30 + Math.cos(t + i * 0.7) * 15), startY + 160,
+          base, startY + 220,
+        );
         ctx.stroke();
       }
       ctx.restore();
@@ -116,23 +129,18 @@ export default function NatureOverlay() {
       ctx.translate(l.x, l.y);
       ctx.rotate(l.rot);
       ctx.globalAlpha = l.op;
-
-      // leaf shape — pointy ellipse
       ctx.beginPath();
       ctx.moveTo(l.size, 0);
       ctx.quadraticCurveTo(0, -l.size * 0.55, -l.size, 0);
       ctx.quadraticCurveTo(0, l.size * 0.55, l.size, 0);
       ctx.fillStyle = `hsla(${l.hue},55%,32%,0.8)`;
       ctx.fill();
-
-      // vein line
       ctx.beginPath();
       ctx.moveTo(-l.size * 0.8, 0);
       ctx.lineTo(l.size * 0.8, 0);
       ctx.strokeStyle = `hsla(${l.hue},40%,45%,0.4)`;
       ctx.lineWidth = 0.5;
       ctx.stroke();
-
       ctx.restore();
     };
 
@@ -144,29 +152,21 @@ export default function NatureOverlay() {
       ctx.translate(b.x, b.y);
       ctx.rotate(tilt);
       ctx.globalAlpha = b.op;
-
-      // body
       ctx.beginPath();
       ctx.ellipse(0, 0, b.bodyLen, b.bodyLen * 0.4, 0, 0, Math.PI * 2);
       ctx.fillStyle = "rgba(255,255,255,0.5)";
       ctx.fill();
-
-      // wings
       ctx.strokeStyle = "rgba(255,255,255,0.6)";
       ctx.lineWidth = 1.2;
       ctx.lineCap = "round";
-      // left wing
       ctx.beginPath();
       ctx.moveTo(-2, 0);
       ctx.quadraticCurveTo(-b.wingSpan * 0.5, -flap - 2, -b.wingSpan, -flap * 0.6);
       ctx.stroke();
-      // right wing
       ctx.beginPath();
       ctx.moveTo(2, 0);
       ctx.quadraticCurveTo(b.wingSpan * 0.5, -flap - 2, b.wingSpan, -flap * 0.6);
       ctx.stroke();
-
-      // tail
       ctx.beginPath();
       ctx.moveTo(-b.bodyLen, 0);
       ctx.lineTo(-b.bodyLen - 3, 1.5);
@@ -174,6 +174,95 @@ export default function NatureOverlay() {
       ctx.closePath();
       ctx.fillStyle = "rgba(255,255,255,0.35)";
       ctx.fill();
+      ctx.restore();
+    };
+
+    /* ── draw deer ── */
+    const drawDeer = (d: Deer, H: number) => {
+      const s = d.size * 28;        // base scale unit
+      const groundY = H - 18;       // ground line
+      const legSwing = Math.sin(d.legPhase) * 4 * d.size;
+
+      ctx.save();
+      ctx.translate(d.x, groundY);
+      ctx.scale(d.dir, 1);          // flip if walking left
+      ctx.globalAlpha = d.op;
+
+      const col = "rgba(255,255,255,0.6)";
+      ctx.strokeStyle = col;
+      ctx.fillStyle   = col;
+      ctx.lineWidth   = 1.4 * d.size;
+      ctx.lineCap     = "round";
+      ctx.lineJoin    = "round";
+
+      // ── legs (4) ──
+      // front-left
+      ctx.beginPath();
+      ctx.moveTo(s * 0.3, -s * 0.15);
+      ctx.lineTo(s * 0.3 + legSwing, 0);
+      ctx.stroke();
+      // front-right
+      ctx.beginPath();
+      ctx.moveTo(s * 0.35, -s * 0.18);
+      ctx.lineTo(s * 0.35 - legSwing, 0);
+      ctx.stroke();
+      // back-left
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.28, -s * 0.15);
+      ctx.lineTo(-s * 0.28 - legSwing, 0);
+      ctx.stroke();
+      // back-right
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.24, -s * 0.18);
+      ctx.lineTo(-s * 0.24 + legSwing, 0);
+      ctx.stroke();
+
+      // ── body ── (elongated ellipse)
+      ctx.beginPath();
+      ctx.ellipse(0, -s * 0.32, s * 0.44, s * 0.18, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ── neck + head ──
+      ctx.beginPath();
+      ctx.moveTo(s * 0.38, -s * 0.38);
+      ctx.quadraticCurveTo(s * 0.48, -s * 0.7, s * 0.52, -s * 0.78);
+      ctx.stroke();
+
+      // head
+      ctx.beginPath();
+      ctx.ellipse(s * 0.54, -s * 0.82, s * 0.1, s * 0.07, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ear
+      ctx.beginPath();
+      ctx.moveTo(s * 0.52, -s * 0.88);
+      ctx.lineTo(s * 0.48, -s * 1.0);
+      ctx.lineTo(s * 0.55, -s * 0.92);
+      ctx.stroke();
+
+      // ── antlers ──
+      ctx.lineWidth = 1 * d.size;
+      // main branch right
+      ctx.beginPath();
+      ctx.moveTo(s * 0.56, -s * 0.9);
+      ctx.quadraticCurveTo(s * 0.7, -s * 1.18, s * 0.68, -s * 1.3);
+      ctx.stroke();
+      // tine 1
+      ctx.beginPath();
+      ctx.moveTo(s * 0.64, -s * 1.12);
+      ctx.lineTo(s * 0.74, -s * 1.18);
+      ctx.stroke();
+      // tine 2
+      ctx.beginPath();
+      ctx.moveTo(s * 0.67, -s * 1.22);
+      ctx.lineTo(s * 0.78, -s * 1.24);
+      ctx.stroke();
+
+      // ── tail ──
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.42, -s * 0.38);
+      ctx.lineTo(-s * 0.52, -s * 0.45);
+      ctx.stroke();
 
       ctx.restore();
     };
@@ -185,6 +274,7 @@ export default function NatureOverlay() {
       drawEdge("l", c.width, c.height);
       drawEdge("r", c.width, c.height);
 
+      // leaves
       leaves.forEach(l => {
         l.x += l.vx + Math.sin(Date.now() * 0.0008 + l.rot) * 0.18;
         l.y += l.vy;
@@ -195,12 +285,25 @@ export default function NatureOverlay() {
         drawLeaf(l);
       });
 
+      // birds
       birds.forEach(b => {
         b.x += b.vx;
         b.phase += 0.055;
         b.y += Math.sin(b.phase * 0.22) * 0.22;
         if (b.x > c.width + 160) { b.x = -140; b.y = 40 + Math.random() * 220; }
         drawBird(b);
+      });
+
+      // deer
+      deer.forEach(d => {
+        d.x += d.vx * d.dir;
+        d.legPhase += 0.035;
+
+        // wrap around edges
+        if (d.dir === 1 && d.x > c.width + 60)  d.x = -60;
+        if (d.dir === -1 && d.x < -60)           d.x = c.width + 60;
+
+        drawDeer(d, c.height);
       });
 
       raf.current = requestAnimationFrame(loop);
