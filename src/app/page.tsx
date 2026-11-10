@@ -12,8 +12,7 @@ import PortfolioSection from "@/components/PortfolioSection";
 import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import SectionNavigator from "@/components/SectionNavigator";
-import NatureOverlay from "@/components/NatureOverlay";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
   ssr: false,
@@ -21,15 +20,23 @@ const ParticleBackground = dynamic(() => import("@/components/ParticleBackground
 const CursorGlow = dynamic(() => import("@/components/CursorGlow"), {
   ssr: false,
 });
+const NatureOverlay = dynamic(() => import("@/components/NatureOverlay"), {
+  ssr: false,
+});
+const SectionNavigator = dynamic(() => import("@/components/SectionNavigator"), {
+  ssr: false,
+});
 
 export default function HomePage() {
+  const isMobile = useIsMobile();
+
   return (
     <main className="relative overflow-hidden bg-[#060606]">
-      <ParticleBackground />
-      <NatureOverlay />
-      <CursorGlow />
+      {!isMobile && <ParticleBackground />}
+      {!isMobile && <NatureOverlay />}
+      {!isMobile && <CursorGlow />}
       <Navbar />
-      <SectionNavigator />
+      {!isMobile && <SectionNavigator />}
 
       <div className="relative z-10">
         <HeroSection />
