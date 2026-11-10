@@ -61,18 +61,27 @@ body {
 /* ── Utility classes ───────────────────────────────── */
 .animate-pulse-dot  { animation: pulse-dot  2.4s ease-in-out infinite; }
 .animate-line-scroll { animation: line-scroll 1.5s ease-in-out infinite alternate; }
-.cosmic-orb  { animation: drift   10s ease-in-out infinite; }
-.light-beam  { animation: beam     7s ease-in-out infinite; }
-.star-point  { animation: twinkle  4s ease-in-out infinite; }
+
+/* Heavy CSS animations — desktop only */
+@media (min-width: 768px) {
+  .cosmic-orb  { animation: drift   10s ease-in-out infinite; }
+  .light-beam  { animation: beam     7s ease-in-out infinite; }
+  .star-point  { animation: twinkle  4s ease-in-out infinite; }
+}
+@media (max-width: 767px) {
+  .cosmic-orb, .light-beam, .star-point { animation: none; }
+}
 
 /* Silver gradient for headings */
 .gradient-text {
   background: linear-gradient(135deg, #ffffff 0%, #888888 50%, #ffffff 100%);
   background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+@media (min-width: 768px) {
+  .gradient-text { animation: gradient-shift 6s ease infinite; }
 }
 
 /* Serif display font shorthand */
@@ -83,10 +92,15 @@ body {
 
 /* Glass panels */
 .panel-glass {
-  background: linear-gradient(180deg, rgba(16,16,16,0.9), rgba(8,8,8,0.95));
+  background: linear-gradient(180deg, rgba(16,16,16,0.95), rgba(8,8,8,0.98));
   border: 1px solid rgba(255,255,255,0.07);
   box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  backdrop-filter: blur(12px);
+}
+@media (min-width: 768px) {
+  .panel-glass {
+    background: linear-gradient(180deg, rgba(16,16,16,0.9), rgba(8,8,8,0.95));
+    backdrop-filter: blur(12px);
+  }
 }
 
 /* Primary action button */
@@ -127,29 +141,33 @@ body {
     rgba(0,0,0,0.75));
 }
 
-/* Noise grain overlay */
-.hero-grain::before,
-.noise-overlay::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+/* Noise grain overlay — desktop only */
+@media (min-width: 768px) {
+  .hero-grain::before,
+  .noise-overlay::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
 }
 
-/* Section glow topper */
+/* Section glow topper — desktop only */
 .section-shell {
   position: relative;
   isolation: isolate;
 }
-.section-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.025), transparent 50%);
-  pointer-events: none;
-  z-index: -1;
+@media (min-width: 768px) {
+  .section-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.025), transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
 }
 
 /* Soft section separator */
@@ -168,15 +186,39 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
 }
 
-/* Scanline animation (purely decorative) */
-.scanline::after {
-  content: "";
-  position: absolute;
-  inset-x: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-  animation: scan 6s linear infinite;
-  pointer-events: none;
+/* Scanline animation — desktop only */
+@media (min-width: 768px) {
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset-x: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+    animation: scan 6s linear infinite;
+    pointer-events: none;
+  }
+}
+
+/* Mobile ticker — lightweight CSS-only animation */
+@keyframes mobile-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.mobile-ticker {
+  animation: mobile-scroll 20s linear infinite;
+  will-change: transform;
+}
+/* Desktop ticker — JS-driven, just needs base transform */
+.desktop-ticker {
+  animation: mobile-scroll 36s linear infinite;
+}
+
+/* Disable all heavy transitions on mobile */
+@media (max-width: 767px) {
+  *, *::before, *::after {
+    transition-duration: 0.1s !important;
+  }
+  .section-transition { height: 40px; }
 }
 
 /* Fine grid background */
