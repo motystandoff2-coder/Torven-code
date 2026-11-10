@@ -2,21 +2,41 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
+import Link from "next/link";
 import AnimatedSection from "./AnimatedSection";
 import useIsMobile from "@/hooks/useIsMobile";
 
 const TG = "https://t.me/versusire";
 
 const services = [
-  { num: "01", title: "САЙТЫ", desc: "Имиджевые и коммерческие сайты с сильной первой сценой, чистой сеткой и чёткой конверсией." },
-  { num: "02", title: "ВЕБ-ПРИЛОЖЕНИЯ", desc: "Кабинеты, сервисы и панели управления под реальные рабочие процессы и данные." },
-  { num: "03", title: "МОБИЛЬНЫЕ ПРИЛОЖЕНИЯ", desc: "Клиентские приложения, работающие в связке с вашим API, CRM и базой данных." },
-  { num: "04", title: "DISCORD-БОТЫ", desc: "Автоматизация комьюнити, кастомные команды, moderation-flow и интеграции." },
-  { num: "05", title: "TELEGRAM-БОТЫ", desc: "Заказы, заявки, уведомления, личные кабинеты и связка с бизнес-логикой." },
-  { num: "06", title: "SAAS-СИСТЕМЫ", desc: "От MVP до рабочей подписочной платформы: архитектура, биллинг, роли и рост." },
+  { num: "01", title: "САЙТЫ", slug: "websites", desc: "Имиджевые и коммерческие сайты с сильной первой сценой, чистой сеткой и чёткой конверсией." },
+  { num: "02", title: "ВЕБ-ПРИЛОЖЕНИЯ", slug: "web-apps", desc: "Кабинеты, сервисы и панели управления под реальные рабочие процессы и данные." },
+  { num: "03", title: "МОБИЛЬНЫЕ ПРИЛОЖЕНИЯ", slug: "mobile-apps", desc: "Клиентские приложения, работающие в связке с вашим API, CRM и базой данных." },
+  { num: "04", title: "DISCORD-БОТЫ", slug: "discord-bots", desc: "Автоматизация комьюнити, кастомные команды, moderation-flow и интеграции." },
+  { num: "05", title: "TELEGRAM-БОТЫ", slug: "telegram-bots", desc: "Заказы, заявки, уведомления, личные кабинеты и связка с бизнес-логикой." },
+  { num: "06", title: "SAAS-СИСТЕМЫ", slug: "saas", desc: "От MVP до рабочей подписочной платформы: архитектура, биллинг, роли и рост." },
 ];
 
-/* ── Desktop card with 3D tilt ── */
+function CardContent({ service }: { service: typeof services[0] }) {
+  return (
+    <>
+      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/4 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+      <div className="relative z-10">
+        <div className="mb-7 flex items-center justify-between">
+          <span className="text-[11px] uppercase tracking-[0.32em] text-white/30">module {service.num}</span>
+          <span className="block h-2 w-2 rounded-full bg-white/25 transition group-hover:bg-white/60" />
+        </div>
+        <h3 className="text-lg font-bold uppercase tracking-[0.08em] text-white/90">{service.title}</h3>
+        <p className="mt-4 text-sm leading-relaxed text-white/40">{service.desc}</p>
+        <div className="mt-7 flex items-center gap-3 text-sm font-medium text-white/50">
+          <span className="block h-px w-8 bg-white/30 transition-all group-hover:w-12 group-hover:bg-white/60" />
+          <span className="transition group-hover:text-white/80">Подробнее ↗</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function DesktopCard({ service, index }: { service: typeof services[0]; index: number }) {
   const ref = useRef<HTMLAnchorElement | null>(null);
   const x = useMotionValue(0);
@@ -27,11 +47,7 @@ function DesktopCard({ service, index }: { service: typeof services[0]; index: n
   const ry = useTransform(sx, [-0.5, 0.5], [-4, 4]);
 
   return (
-    <motion.a
-      ref={ref}
-      href={TG}
-      target="_blank"
-      rel="noopener noreferrer"
+    <motion.div
       initial={{ opacity: 0, y: 44, filter: "blur(6px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-70px" }}
@@ -44,48 +60,26 @@ function DesktopCard({ service, index }: { service: typeof services[0]; index: n
         y.set((e.clientY - r.top) / r.height - 0.5);
       }}
       onMouseLeave={() => { x.set(0); y.set(0); }}
-      className="panel-glass group relative block cursor-pointer overflow-hidden rounded-sm p-7 no-underline"
     >
-      <CardContent service={service} index={index} />
-    </motion.a>
+      <Link
+        ref={ref}
+        href={`/services/${service.slug}`}
+        className="panel-glass group relative block cursor-pointer overflow-hidden rounded-sm p-7 no-underline"
+      >
+        <CardContent service={service} />
+      </Link>
+    </motion.div>
   );
 }
 
-/* ── Mobile card — plain anchor, no animation ── */
-function MobileCard({ service, index }: { service: typeof services[0]; index: number }) {
+function MobileCard({ service }: { service: typeof services[0] }) {
   return (
-    <a
-      href={TG}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      href={`/services/${service.slug}`}
       className="panel-glass group relative block cursor-pointer overflow-hidden rounded-sm p-7 no-underline"
     >
-      <CardContent service={service} index={index} />
-    </a>
-  );
-}
-
-function CardContent({ service, index }: { service: typeof services[0]; index: number }) {
-  return (
-    <>
-      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/4 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-      <div className="relative z-10">
-        <div className="mb-7 flex items-center justify-between">
-          <span className="text-[11px] uppercase tracking-[0.32em] text-white/30">module {service.num}</span>
-          <motion.span
-            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.8, 0.3] }}
-            transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: index * 0.3 }}
-            className="block h-2 w-2 rounded-full bg-white/40"
-          />
-        </div>
-        <h3 className="text-lg font-bold uppercase tracking-[0.08em] text-white/90">{service.title}</h3>
-        <p className="mt-4 text-sm leading-relaxed text-white/40">{service.desc}</p>
-        <div className="mt-7 flex items-center gap-3 text-sm font-medium text-white/50">
-          <span className="block h-px w-8 bg-white/30 transition-all group-hover:w-12 group-hover:bg-white/60" />
-          <span className="transition group-hover:text-white/80">Написать в Telegram ↗</span>
-        </div>
-      </div>
-    </>
+      <CardContent service={service} />
+    </Link>
   );
 }
 
@@ -126,7 +120,7 @@ export default function ServicesSection() {
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {services.map((s, i) =>
             isMobile
-              ? <MobileCard key={s.num} service={s} index={i} />
+              ? <MobileCard key={s.num} service={s} />
               : <DesktopCard key={s.num} service={s} index={i} />
           )}
         </div>
