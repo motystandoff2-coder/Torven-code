@@ -2,15 +2,18 @@
 
 import { motion } from "framer-motion";
 import AnimatedSection from "./AnimatedSection";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const features = [
-  { id: "01", title: "АРХИТЕКТУРА С ЗАПАСОМ",      desc: "Строим основу так, чтобы продукт пережил не только запуск, но и следующий виток роста." },
-  { id: "02", title: "ОБЩЕНИЕ БЕЗ ПРОКЛАДОК",       desc: "Вы общаетесь с теми, кто проектирует и пишет код — решения принимаются быстрее." },
-  { id: "03", title: "ТЁМНЫЙ ПРЕМИАЛЬНЫЙ ВИЗУАЛ",   desc: "Сильная подача, кинематографичная типографика, чистая анимация и внимание к ритму экрана." },
-  { id: "04", title: "РЕЛИЗ И ДАЛЬШЕ",              desc: "Не исчезаем после запуска: дорабатываем, оптимизируем и превращаем MVP в рабочую систему." },
+  { id: "01", title: "АРХИТЕКТУРА С ЗАПАСОМ", desc: "Строим основу так, чтобы продукт пережил не только запуск, но и следующий виток роста." },
+  { id: "02", title: "ОБЩЕНИЕ БЕЗ ПРОКЛАДОК", desc: "Вы общаетесь с теми, кто проектирует и пишет код — решения принимаются быстрее." },
+  { id: "03", title: "ТЁМНЫЙ ПРЕМИАЛЬНЫЙ ВИЗУАЛ", desc: "Сильная подача, кинематографичная типографика, чистая анимация и внимание к ритму экрана." },
+  { id: "04", title: "РЕЛИЗ И ДАЛЬШЕ", desc: "Не исчезаем после запуска: дорабатываем, оптимизируем и превращаем MVP в рабочую систему." },
 ];
 
 export default function AboutSection() {
+  const isMobile = useIsMobile();
+
   return (
     <section id="about" className="relative py-28 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -48,12 +51,14 @@ export default function AboutSection() {
 
         <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {features.map((feature, index) => (
-            <motion.div key={feature.id}
-              initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: index * 0.08, ease: "easeOut" }}
-              className="panel-glass group rounded-sm p-7 transition duration-500 hover:-translate-y-1">
+            <motion.div
+              key={feature.id}
+              initial={isMobile ? false : { opacity: 0, y: 32, filter: "blur(6px)" }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={isMobile ? undefined : { once: true, margin: "-60px" }}
+              transition={isMobile ? undefined : { duration: 0.6, delay: index * 0.08, ease: "easeOut" }}
+              className="panel-glass group rounded-sm p-7 transition duration-500 hover:-translate-y-1"
+            >
               <div className="mb-6 flex items-center justify-between">
                 <span className="text-xs uppercase tracking-[0.3em] text-white/30">{feature.id}</span>
                 <span className="h-1.5 w-1.5 rounded-full bg-white/25 transition group-hover:bg-white/70" />

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import useIsMobile from "@/hooks/useIsMobile";
 
 interface Props {
   children: ReactNode;
@@ -31,6 +32,12 @@ export default function AnimatedSection({
   delay = 0,
   from = "bottom",
 }: Props) {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       custom={from}

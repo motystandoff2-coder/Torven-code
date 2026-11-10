@@ -3,33 +3,42 @@
 import { motion, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import AnimatedSection from "./AnimatedSection";
+import useIsMobile from "@/hooks/useIsMobile";
 
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref    = useRef<HTMLSpanElement>(null);
+  const isMobile = useIsMobile();
+  const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const [n, setN] = useState(0);
 
   useEffect(() => {
+    if (isMobile) {
+      setN(target);
+      return;
+    }
     if (!inView) return;
-    const t0 = Date.now(), dur = 1800;
+    const t0 = Date.now();
+    const dur = 1800;
     const tick = () => {
       const p = Math.min((Date.now() - t0) / dur, 1);
       setN(Math.floor((1 - Math.pow(1 - p, 4)) * target));
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
-  }, [inView, target]);
+  }, [inView, target, isMobile]);
 
   return <span ref={ref} className="gradient-text">{n}{suffix}</span>;
 }
 
 const stats = [
-  { label: "Завершённых проектов",        value: 10, suffix: "+" },
-  { label: "Направлений в одной команде", value: 6,  suffix: ""  },
-  { label: "Обычный срок реализации",     display: "2—4 нед."     },
+  { label: "Завершённых проектов", value: 10, suffix: "+" },
+  { label: "Направлений в одной команде", value: 6, suffix: "" },
+  { label: "Обычный срок реализации", display: "2—4 нед." },
 ];
 
 export default function StatsSection() {
+  const isMobile = useIsMobile();
+
   return (
     <section id="stats" className="relative py-28 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -45,17 +54,16 @@ export default function StatsSection() {
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">
           {stats.map((s, i) => (
-            <motion.div key={s.label}
-              initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-              className="panel-glass rounded-sm p-8 md:p-10">
+            <motion.div
+              key={s.label}
+              initial={isMobile ? false : { opacity: 0, y: 32, filter: "blur(6px)" }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={isMobile ? undefined : { once: true, margin: "-60px" }}
+              transition={isMobile ? undefined : { duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+              className="panel-glass rounded-sm p-8 md:p-10"
+            >
               <div className="text-4xl font-black md:text-5xl">
-                {"display" in s
-                  ? <span className="gradient-text">{s.display}</span>
-                  : <Counter target={s.value} suffix={s.suffix} />
-                }
+                {"display" in s ? <span className="gradient-text">{s.display}</span> : <Counter target={s.value} suffix={s.suffix} />}
               </div>
               <p className="mt-4 text-sm uppercase tracking-[0.16em] text-white/35">{s.label}</p>
             </motion.div>

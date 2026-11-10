@@ -2,16 +2,19 @@
 
 import { motion } from "framer-motion";
 import AnimatedSection from "./AnimatedSection";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const steps = [
-  { num: "01", title: "DISCOVERY",    desc: "Разбираем задачу, цель и контекст проекта, чтобы решение влияло на реальный результат." },
-  { num: "02", title: "ART DIRECTION",desc: "Собираем настроение интерфейса, ритм экранов и визуальную линию продукта." },
-  { num: "03", title: "ENGINEERING",  desc: "Поднимаем frontend и backend: интерфейс, API, база, роли и связки с интеграциями." },
-  { num: "04", title: "HARDENING",    desc: "Прогоняем типы и сборку, проверяем UX, производительность и доводим детали перед релизом." },
-  { num: "05", title: "LAUNCH",       desc: "Запускаем, мониторим, собираем обратную связь и планируем следующую итерацию." },
+  { num: "01", title: "DISCOVERY", desc: "Разбираем задачу, цель и контекст проекта, чтобы решение влияло на реальный результат." },
+  { num: "02", title: "ART DIRECTION", desc: "Собираем настроение интерфейса, ритм экранов и визуальную линию продукта." },
+  { num: "03", title: "ENGINEERING", desc: "Поднимаем frontend и backend: интерфейс, API, база, роли и связки с интеграциями." },
+  { num: "04", title: "HARDENING", desc: "Прогоняем типы и сборку, проверяем UX, производительность и доводим детали перед релизом." },
+  { num: "05", title: "LAUNCH", desc: "Запускаем, мониторим, собираем обратную связь и планируем следующую итерацию." },
 ];
 
 export default function ProcessSection() {
+  const isMobile = useIsMobile();
+
   return (
     <section id="process" className="relative py-28 md:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -29,12 +32,14 @@ export default function ProcessSection() {
 
         <div className="mt-14 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
           {steps.map((step, i) => (
-            <motion.div key={step.num}
-              initial={{ opacity: 0, y: 36, filter: "blur(6px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, margin: "-70px" }}
-              transition={{ duration: 0.6, delay: i * 0.09, ease: "easeOut" }}
-              className="panel-glass group rounded-sm p-6 transition duration-500 hover:-translate-y-1">
+            <motion.div
+              key={step.num}
+              initial={isMobile ? false : { opacity: 0, y: 36, filter: "blur(6px)" }}
+              whileInView={isMobile ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+              viewport={isMobile ? undefined : { once: true, margin: "-70px" }}
+              transition={isMobile ? undefined : { duration: 0.6, delay: i * 0.09, ease: "easeOut" }}
+              className="panel-glass group rounded-sm p-6 transition duration-500 hover:-translate-y-1"
+            >
               <div className="mb-6 flex items-start justify-between">
                 <span className="text-[10px] uppercase tracking-[0.34em] text-white/30">phase {step.num}</span>
                 <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/14 text-xs font-semibold text-white/50 transition group-hover:border-white/35 group-hover:text-white/80">
