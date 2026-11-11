@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import TechTicker from "@/components/TechTicker";
 import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
 import StatsSection from "@/components/StatsSection";
@@ -12,8 +11,12 @@ import PortfolioSection from "@/components/PortfolioSection";
 import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import useIsMobile from "@/hooks/useIsMobile";
+import FAQSection from "@/components/FAQSection";
+import PageTransition from "@/components/PageTransition";
+import DeerDivider from "@/components/DeerDivider";
 import MobileNature from "@/components/MobileNature";
+import MobileDeer from "@/components/MobileDeer";
+import useIsMobile from "@/hooks/useIsMobile";
 
 const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
   ssr: false,
@@ -32,55 +35,62 @@ export default function HomePage() {
   const isMobile = useIsMobile();
 
   return (
-    <main className="relative overflow-hidden bg-[#060606]">
-      {!isMobile && <ParticleBackground />}
-      {!isMobile && <NatureOverlay />}
-      {!isMobile && <CursorGlow />}
-      {isMobile && <MobileNature />}
-      <Navbar />
-      {!isMobile && <SectionNavigator />}
+    <PageTransition>
+      <main className="relative overflow-hidden bg-[#060606]">
+        {!isMobile && <ParticleBackground />}
+        {!isMobile && <NatureOverlay />}
+        {!isMobile && <CursorGlow />}
+        {isMobile && <MobileNature />}
+        {isMobile && <MobileDeer />}
+        <Navbar />
+        {!isMobile && <SectionNavigator />}
 
-      <div className="relative z-10">
-        <HeroSection />
-        <TechTicker />
+        <div className="relative z-10">
+          <HeroSection />
 
-        <div className="section-transition" />
-        <div className="section-shell">
-          <AboutSection />
+          <DeerDivider />
+          <div className="section-shell">
+            <AboutSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <ServicesSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <StatsSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <ProcessSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <PortfolioSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <FAQSection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <CTASection />
+          </div>
+
+          <DeerDivider />
+          <div className="section-shell">
+            <ContactSection />
+          </div>
+
+          <Footer />
         </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <ServicesSection />
-        </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <StatsSection />
-        </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <ProcessSection />
-        </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <PortfolioSection />
-        </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <CTASection />
-        </div>
-
-        <div className="section-transition" />
-        <div className="section-shell">
-          <ContactSection />
-        </div>
-
-        <Footer />
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 }
