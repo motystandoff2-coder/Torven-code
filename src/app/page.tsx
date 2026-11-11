@@ -13,6 +13,7 @@ import CTASection from "@/components/CTASection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import useIsMobile from "@/hooks/useIsMobile";
+import MobileNature from "@/components/MobileNature";
 
 const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
   ssr: false,
@@ -35,6 +36,7 @@ export default function HomePage() {
       {!isMobile && <ParticleBackground />}
       {!isMobile && <NatureOverlay />}
       {!isMobile && <CursorGlow />}
+      {isMobile && <MobileNature />}
       <Navbar />
       {!isMobile && <SectionNavigator />}
 

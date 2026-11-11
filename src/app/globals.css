@@ -234,6 +234,217 @@ body {
   .blur-3xl, .blur-2xl, .blur-xl { filter: none !important; display: none !important; }
 }
 
+/* ═══════════════════════════════════════════════
+   MOBILE NATURE  —  pure CSS, zero JS, zero canvas
+   Only transform + opacity (compositor-only props)
+   ═══════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes mn-sway {
+  0%, 100% { transform: rotate(-2deg) translateX(0); }
+  50%       { transform: rotate( 2deg) translateX(3px); }
+}
+@keyframes mn-fly {
+  0%   { transform: translateX(-15vw) translateY(0); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateX(115vw) translateY(-8px); opacity: 0; }
+}
+@keyframes mn-fly2 {
+  0%   { transform: translateX(-15vw) translateY(0); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateX(115vw) translateY(12px); opacity: 0; }
+}
+@keyframes mn-fly3 {
+  0%   { transform: translateX(-15vw) translateY(0); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(115vw) translateY(-5px); opacity: 0; }
+}
+@keyframes mn-leaf-fall {
+  0%   { transform: translateY(-20px) rotate(0deg) translateX(0);   opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(100vh)  rotate(540deg) translateX(30px); opacity: 0; }
+}
+@keyframes mn-leaf-fall2 {
+  0%   { transform: translateY(-20px) rotate(0deg)   translateX(0);    opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translateY(100vh)  rotate(-360deg) translateX(-25px); opacity: 0; }
+}
+@keyframes mn-star-pulse {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50%       { opacity: 0.8; transform: scale(1.5); }
+}
+@keyframes mn-fog-drift {
+  0%   { transform: translateX(0); opacity: 0.4; }
+  50%  { transform: translateX(12px); opacity: 0.6; }
+  100% { transform: translateX(0); opacity: 0.4; }
+}
+@keyframes mn-glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.9; }
+}
+
+/* ── Container ── */
+.mobile-nature {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+}
+
+/* ── Glow blobs (radial gradients — no GPU blur, just color) ── */
+.mn-glow {
+  position: absolute;
+  border-radius: 50%;
+  animation: mn-glow-pulse 6s ease-in-out infinite;
+}
+.mn-glow-l1 {
+  left: -18%; top:  5%;
+  width: 60vw; height: 60vw;
+  background: radial-gradient(circle, rgba(30,100,20,0.14) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+.mn-glow-l2 {
+  left: -12%; top: 50%;
+  width: 50vw; height: 50vw;
+  background: radial-gradient(circle, rgba(20,80,15,0.1) 0%, transparent 70%);
+  animation-delay: 2.5s;
+}
+.mn-glow-r1 {
+  right: -18%; top: 10%;
+  width: 55vw; height: 55vw;
+  background: radial-gradient(circle, rgba(25,90,18,0.12) 0%, transparent 70%);
+  animation-delay: 1.2s;
+}
+.mn-glow-r2 {
+  right: -15%; top: 55%;
+  width: 48vw; height: 48vw;
+  background: radial-gradient(circle, rgba(18,70,12,0.09) 0%, transparent 70%);
+  animation-delay: 3.5s;
+}
+.mn-glow-b {
+  left: 50%; bottom: -10%; transform: translateX(-50%);
+  width: 90vw; height: 40vw;
+  background: radial-gradient(ellipse, rgba(22,80,16,0.12) 0%, transparent 70%);
+  animation-delay: 0.8s;
+}
+
+/* ── Trees ── */
+.mn-tree {
+  position: absolute;
+  bottom: 0;
+  transform-origin: bottom center;
+  animation: mn-sway 8s ease-in-out infinite;
+}
+.mn-tree-ll { left: -1vw;  width: 15vw; height: auto; opacity: 0.65; animation-delay: 0s; }
+.mn-tree-lr { left:  9vw;  width: 11vw; height: auto; opacity: 0.45; animation-delay: 1.8s; animation-duration: 11s; }
+.mn-tree-rl { right:-1vw;  width: 15vw; height: auto; opacity: 0.65; animation-delay: 0.9s; transform-origin: bottom center; }
+.mn-tree-rr { right: 9vw;  width: 11vw; height: auto; opacity: 0.45; animation-delay: 2.6s; animation-duration: 10s; }
+
+/* ── Grass ── */
+.mn-grass {
+  position: absolute;
+  bottom: 0;
+}
+.mn-grass-l { left: 0;   width: 32vw; height: auto; opacity: 0.55; }
+.mn-grass-r { right: 0;  width: 32vw; height: auto; opacity: 0.55; }
+
+/* ── Birds ── */
+.mn-bird {
+  position: absolute;
+  will-change: transform;
+}
+.mn-bird-1 {
+  top: 14%; left: 0;
+  width: 36px; height: 14px;
+  animation: mn-fly 22s linear infinite;
+  animation-delay: 2s;
+}
+.mn-bird-2 {
+  top: 22%; left: 0;
+  width: 28px; height: 10px;
+  animation: mn-fly2 28s linear infinite;
+  animation-delay: 10s;
+}
+.mn-bird-3 {
+  top: 10%; left: 0;
+  width: 22px; height: 8px;
+  animation: mn-fly3 34s linear infinite;
+  animation-delay: 18s;
+}
+
+/* ── Falling leaves ── */
+.mn-leaf {
+  position: absolute;
+  will-change: transform;
+}
+.mn-leaf-1 { left: 8%;   top: -20px; width: 14px; animation: mn-leaf-fall  14s linear infinite; animation-delay: 1s; }
+.mn-leaf-2 { left: 25%;  top: -20px; width: 12px; animation: mn-leaf-fall2 18s linear infinite; animation-delay: 5s; }
+.mn-leaf-3 { left: 55%;  top: -20px; width: 11px; animation: mn-leaf-fall  22s linear infinite; animation-delay: 9s; }
+.mn-leaf-4 { left: 72%;  top: -20px; width: 13px; animation: mn-leaf-fall2 16s linear infinite; animation-delay: 3s; }
+.mn-leaf-5 { left: 88%;  top: -20px; width: 10px; animation: mn-leaf-fall  20s linear infinite; animation-delay: 13s; }
+
+/* ── Stars / fireflies ── */
+.mn-star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  animation: mn-star-pulse var(--d, 4s) ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* ── Ground fog (pure CSS gradient, no blur) ── */
+.mn-fog {
+  position: absolute;
+  bottom: 0;
+  height: 22vw;
+  border-radius: 50%;
+  animation: mn-fog-drift 12s ease-in-out infinite;
+}
+.mn-fog-1 {
+  left: -10%; width: 70vw;
+  background: radial-gradient(ellipse at bottom, rgba(20,70,15,0.18) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+.mn-fog-2 {
+  right: -10%; width: 70vw;
+  background: radial-gradient(ellipse at bottom, rgba(18,65,13,0.14) 0%, transparent 70%);
+  animation-delay: 4s;
+}
+
+/* ── Override the global animation killer for nature elements ── */
+@media (max-width: 767px) {
+  .mn-tree    { animation-duration: unset !important; }
+  .mn-bird    { animation-duration: unset !important; }
+  .mn-leaf    { animation-duration: unset !important; }
+  .mn-star    { animation-duration: unset !important; }
+  .mn-fog     { animation-duration: unset !important; }
+  .mn-glow    { animation-duration: unset !important; }
+  .mn-tree-ll { animation-duration: 8s !important; }
+  .mn-tree-lr { animation-duration: 11s !important; }
+  .mn-tree-rl { animation-duration: 9s !important; }
+  .mn-tree-rr { animation-duration: 10s !important; }
+  .mn-leaf-1  { animation-duration: 14s !important; }
+  .mn-leaf-2  { animation-duration: 18s !important; }
+  .mn-leaf-3  { animation-duration: 22s !important; }
+  .mn-leaf-4  { animation-duration: 16s !important; }
+  .mn-leaf-5  { animation-duration: 20s !important; }
+  .mn-bird-1  { animation-duration: 22s !important; }
+  .mn-bird-2  { animation-duration: 28s !important; }
+  .mn-bird-3  { animation-duration: 34s !important; }
+  .mn-fog-1   { animation-duration: 12s !important; }
+  .mn-fog-2   { animation-duration: 12s !important; }
+  .mn-glow-l1, .mn-glow-l2, .mn-glow-r1, .mn-glow-r2, .mn-glow-b { animation-duration: 6s !important; }
+}
+
+/* Show ONLY on mobile */
+.mobile-nature { display: none; }
+@media (max-width: 767px) { .mobile-nature { display: block; } }
+
 /* Fine grid background */
 .grid-bg {
   background-image:
