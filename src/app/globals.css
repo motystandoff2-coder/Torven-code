@@ -220,6 +220,22 @@ body {
   animation: mobile-scroll 36s linear infinite;
 }
 
+/* ═══════════════════════════════════════════════
+   MOBILE SECTION SWIPE — CSS only, GPU-friendly
+   ═══════════════════════════════════════════════ */
+@keyframes slide-in-right {
+  from { transform: translateX(60px);  opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-60px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@media (max-width: 767px) {
+  .mobile-slide-right { animation: slide-in-right 0.32s ease-out both; }
+  .mobile-slide-left  { animation: slide-in-left  0.32s ease-out both; }
+}
+
 /* Kill all GPU-heavy effects on mobile */
 @media (max-width: 767px) {
   *, *::before, *::after {
@@ -232,6 +248,8 @@ body {
   .section-transition { height: 24px; }
   .panel-glass { box-shadow: none !important; }
   .blur-3xl, .blur-2xl, .blur-xl { filter: none !important; display: none !important; }
+  .mobile-slide-right { animation: slide-in-right 0.32s ease-out both !important; }
+  .mobile-slide-left  { animation: slide-in-left  0.32s ease-out both !important; }
 }
 
 /* ═══════════════════════════════════════════════
